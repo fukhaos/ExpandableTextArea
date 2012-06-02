@@ -15,9 +15,12 @@
 @synthesize text;
 @synthesize hasCam;
 @synthesize firstTime;
-@synthesize folder;
+//@synthesize folder;
 @synthesize maxLines;
 @synthesize minLines;
+
+@synthesize backgroundLeftCap;
+@synthesize backgroundTopCap;
 
 -(void)dealloc
 {
@@ -31,9 +34,9 @@
 
 -(NSString*)getNormalizedPath:(NSString*)source
 {
-	if(!self.folder)
+	/*if(!self.folder)
 		self.folder = @"";
-	source = [self.folder stringByAppendingString:source];
+	source = [self.folder stringByAppendingString:source];*/
 	
 	if ([source hasPrefix:@"file:/"]) {
 		NSURL* url = [NSURL URLWithString:source];
@@ -142,12 +145,12 @@
 		[self addSubview: doneBtn];
 		[self addSubview: camButton];
 	
-		[imageView		setImage:			[[self resourcesImage:@"smsview.bundle/MessageEntryBackground.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:22]];
-		[entryImageView setImage:			[[self resourcesImage:@"smsview.bundle/MessageEntryInputField.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:22]];
-		[doneBtn		setBackgroundImage:	[[self resourcesImage:@"smsview.bundle/MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0]	forState:UIControlStateNormal];
-		[doneBtn		setBackgroundImage:	[[self resourcesImage:@"smsview.bundle/MessageEntrySendButton.png"]	stretchableImageWithLeftCapWidth:13	topCapHeight:0]	forState:UIControlStateSelected];
-		[camButton		setBackgroundImage:	 [self resourcesImage:@"smsview.bundle/cameraButtonN.png"]																forState:UIControlStateNormal];
-		[camButton		setBackgroundImage:	 [self resourcesImage:@"smsview.bundle/cameraButtonP.png"]																forState:UIControlStateSelected];
+		[imageView		setImage:			[[self resourcesImage:@"MessageEntryBackground.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:22]];
+		[entryImageView setImage:			[[self resourcesImage:@"MessageEntryInputField.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:22]];
+		[doneBtn		setBackgroundImage:	[[self resourcesImage:@"MessageEntrySendButton.png"] stretchableImageWithLeftCapWidth:13 topCapHeight:0]	forState:UIControlStateNormal];
+		[doneBtn		setBackgroundImage:	[[self resourcesImage:@"MessageEntrySendButton.png"]	stretchableImageWithLeftCapWidth:13	topCapHeight:0]	forState:UIControlStateSelected];
+		[camButton		setBackgroundImage:	 [self resourcesImage:@"cameraButtonN.png"]																forState:UIControlStateNormal];
+		[camButton		setBackgroundImage:	 [self resourcesImage:@"cameraButtonP.png"]																forState:UIControlStateSelected];
 
 	}
 

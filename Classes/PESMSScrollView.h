@@ -25,11 +25,14 @@
 @property(nonatomic, retain)NSString *sColor;
 @property(nonatomic, retain)NSString *rColor;
 @property(nonatomic, retain)NSString *selectedColor;
-@property(nonatomic, retain)NSString *folder;
+//@property(nonatomic, retain)NSString *folder;
 @property(nonatomic, retain)NSMutableArray *allMessages;
 @property(nonatomic, retain)NSMutableDictionary *tempDict;
 @property(nonatomic)BOOL animated;
 @property(nonatomic)int numberOfMessage;
+
+@property(nonatomic, retain)NSNumber *backgroundLeftCap;
+@property(nonatomic, retain)NSNumber *backgroundTopCap;
 
 -(void)sendMessage:(NSString *)text;
 -(void)recieveMessage:(NSString *)text;

@@ -21,12 +21,15 @@
 @synthesize selectedColor;
 @synthesize textValue;
 @synthesize innerView;
-@synthesize folder;
+//@synthesize folder;
 @synthesize imageValue;
 @synthesize prox;
 @synthesize index_;
 @synthesize orient;
 @synthesize label;
+
+@synthesize backgroundLeftCap;
+@synthesize backgroundTopCap;
 
 -(void)dealloc
 {
@@ -255,14 +258,9 @@
 
 -(NSString *)pathOfImage:(NSString *)pos:(NSString *)color
 {
-	if(!self.folder)
-		self.folder = @"";
-	NSString *imgName = [[[[[self.folder
-							 stringByAppendingString:@"smsview.bundle/"]
-							stringByAppendingString:color ]
-						   stringByAppendingString:@"Balloon"]
-						  stringByAppendingString:pos]
-						 stringByAppendingString:@".png" ];
+	/*if(!self.folder)
+		self.folder = @"";*/
+	NSString *imgName = [[[color stringByAppendingString:@"Balloon"] stringByAppendingString:pos] stringByAppendingString:@".png" ];
 	return [self resourcesDir:imgName];
 }
 
@@ -280,6 +278,14 @@
 	self.selectedColor = selCol;
 	
 	NSString *imgName = [self pathOfImage:pos :color];
+    
+    int leftCap = 16, topCap = 9;
+    if (self.backgroundLeftCap != nil) {
+        leftCap = [self.backgroundLeftCap intValue];
+    }
+    if (self.backgroundTopCap != nil) {
+        topCap = [self.backgroundTopCap intValue];
+    }
 	
 	if([pos isEqualToString:@"Left"])
 	{
@@ -305,11 +311,11 @@
 		CGRect b = self.frame;
 		b.size.width +=10;
 		[self setFrame:b];		
-		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:22 topCapHeight:14];
+		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 	}
 	else if([pos isEqualToString:@"Right"])
 	{
-		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:20 topCapHeight:14];
+		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 		CGRect a = self.frame;
 		a.origin.x = (self.superview.frame.size.width-self.frame.size.width)-8;
 		a.size.width +=5;

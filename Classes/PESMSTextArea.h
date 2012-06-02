@@ -36,11 +36,14 @@
 
 @property(assign) NSObject<PESMSTextAreaDelegate> *delegate;
 @property(nonatomic, retain)NSString *text;
-@property(nonatomic, retain)NSString *folder;
+//@property(nonatomic, retain)NSString *folder;
 @property(nonatomic)BOOL hasCam;
 @property(nonatomic)BOOL firstTime;
 @property(nonatomic)int maxLines;
 @property(nonatomic)int minLines;
+
+@property(nonatomic, retain)NSNumber *backgroundLeftCap;
+@property(nonatomic, retain)NSNumber *backgroundTopCap;
 
 -(void)resize:(float)bottom;
 -(void)resignTextView;

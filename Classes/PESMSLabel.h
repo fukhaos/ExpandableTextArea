@@ -26,7 +26,7 @@
 @property(nonatomic, retain)NSString *textValue;
 @property(nonatomic, retain)UILabel *label;
 @property(nonatomic, retain)UIView *innerView;
-@property(nonatomic, retain)NSString *folder;
+//@property(nonatomic, retain)NSString *folder;
 @property(nonatomic, retain)TiProxy *prox;
 @property(nonatomic, retain)UIImage *imageValue;
 @property(nonatomic)BOOL isImage;
@@ -34,6 +34,9 @@
 @property(nonatomic)BOOL isView;
 @property(nonatomic)int index_;
 @property(nonatomic)UIDeviceOrientation orient;
+
+@property(nonatomic, retain)NSNumber *backgroundLeftCap;
+@property(nonatomic, retain)NSNumber *backgroundTopCap;
 
 -(void)addImage:(UIImage *)image;
 -(void)addText:(NSString *)text;

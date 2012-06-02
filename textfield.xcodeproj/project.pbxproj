@@ -311,12 +311,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphoneos*]" = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphonesimulator*]" = i386;
 				COPY_PHASE_STRIP = NO;
@@ -339,12 +339,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphoneos*]" = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphonesimulator*]" = i386;
 				DSTROOT = /tmp/PecTf.dst;
@@ -363,12 +363,12 @@
 			baseConfigurationReference = 24DD6D1B1134B66800162E58 /* titanium.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphoneos*]" = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -385,12 +385,12 @@
 			baseConfigurationReference = 24DD6D1B1134B66800162E58 /* titanium.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphoneos*]" = (
-					 armv6,
-					 armv7,
+					armv6,
+					armv7,
 				);
 				"ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = c99;

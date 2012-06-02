@@ -16,10 +16,13 @@
 @synthesize rColor;
 @synthesize animated;
 @synthesize selectedColor;
-@synthesize folder;
+//@synthesize folder;
 @synthesize allMessages;
 @synthesize numberOfMessage;
 @synthesize tempDict;
+
+@synthesize backgroundLeftCap;
+@synthesize backgroundTopCap;
 
 -(void)dealloc
 {
@@ -78,7 +81,13 @@
 	[self performSelectorOnMainThread:@selector(reloadContentSize) withObject:nil waitUntilDone:YES];
 
 	label = [[PESMSLabel alloc] init];
-	[label setFolder:self.folder];
+	//[label setFolder:self.folder];
+    if (self.backgroundLeftCap != nil) {
+        label.backgroundLeftCap = self.backgroundLeftCap;
+    }
+    if (self.backgroundTopCap != nil) {
+        label.backgroundTopCap = self.backgroundTopCap;
+    }
 	
 	[self.tempDict removeAllObjects];
 	

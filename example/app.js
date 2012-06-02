@@ -33,13 +33,14 @@ var win = Ti.UI.createWindow({
 });
 
 var textArea = Ti.SMSView.createView({
+	backgroundLeftCap: 16,
+	backgroundTopCap: 9,
 	//maxLines:6,				// <--- Defaults to 4
 	//minLines:2,				// <--- Defaults to 1
 	backgroundColor: '#dae1eb',	// <--- Defaults to #dae1eb
-	assets: 'assets',			// <--- Defauls to nothing, smsview.bundle can be placed in the Resources dir
-	// sendColor: 'Green',		// <--- Defaults to "Green"
-	// recieveColor: 'White',	// <--- Defaults to "White"
-	// selectedColor: 'Blue',	// <--- Defaults to "Blue"
+	sendColor: 'White',		// <--- Defaults to "Green"
+	recieveColor: 'White',	// <--- Defaults to "White"
+	selectedColor: 'White',	// <--- Defaults to "Blue"
 	// editable: true,			// <--- Defautls to true, do no change it
 	// animated: false,			// <--- Defaults to true
 	// buttonTitle: 'Something',	// <--- Defaults to "Send"
