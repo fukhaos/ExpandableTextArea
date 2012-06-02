@@ -114,7 +114,7 @@
 	[label setFrame:frame];
 	
 	CGRect a = self.labelsPosition;
-	a.origin.y = frame.origin.y+frame.size.height;
+	a.origin.y = frame.origin.y + frame.size.height + 10; // + 10, margin bottom
 	self.labelsPosition = a;
     
 	[label setIndex_:self.numberOfMessage];
