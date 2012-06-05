@@ -270,9 +270,9 @@
 	if([pos isEqualToString:@""] || !pos)
 		pos = @"Left";
 	if([color isEqualToString:@""] || !color)
-		color = @"Green";
+		color = @"White";
 	if([selCol isEqualToString:@""] || !selCol)
-		selCol = @"Blue";
+		selCol = @"White";
 	
 	self.thisColor = color;
 	self.thisPos = pos;
@@ -310,7 +310,8 @@
 		}
 		
 		CGRect b = self.frame;
-		b.size.width +=10;
+        b.origin.x = 5; // margin
+        b.size.width += 10; // padding
 		[self setFrame:b];		
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 	}
@@ -318,8 +319,8 @@
 	{        
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 		CGRect a = self.frame;
-		a.origin.x = (self.superview.frame.size.width-self.frame.size.width)-8;
-		a.size.width +=5;
+		a.size.width += 8; // padding
+		a.origin.x = (self.superview.frame.size.width - a.size.width) - 5; // margin
 		[self setFrame:a];
 	}
 	else if([pos isEqualToString:@"Center"])

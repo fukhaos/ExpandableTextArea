@@ -39,9 +39,9 @@ var textArea = Ti.SMSView.createView({
 	//maxLines:6,				// <--- Defaults to 4
 	//minLines:2,				// <--- Defaults to 1
 	backgroundColor: '#dae1eb',	// <--- Defaults to #dae1eb
-	sendColor: 'White',		// <--- Defaults to "Green"
+	sendColor: 'White',		// <--- Defaults to "White"
 	recieveColor: 'White',	// <--- Defaults to "White"
-	selectedColor: 'White',	// <--- Defaults to "Blue"
+	selectedColor: 'White',	// <--- Defaults to "White"
 	// editable: true,			// <--- Defautls to true, do no change it
 	// animated: false,			// <--- Defaults to true
 	// buttonTitle: 'Something',	// <--- Defaults to "Send"

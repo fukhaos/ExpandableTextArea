@@ -174,7 +174,7 @@
 -(void)sendImage:(UIImage *)image
 {
 	if(!self.sColor)
-		self.sColor = @"Green";
+		self.sColor = @"White";
 	[[self label:nil:image:nil:@"send"] position:@"Right":self.sColor:self.selectedColor];
 	RELEASE_TO_NIL(label);
 }
@@ -190,7 +190,7 @@
 -(void)sendImageView:(TiUIView *)view
 {
 	if(!self.sColor)
-		self.sColor = @"Green";
+		self.sColor = @"White";
 	[[self label:nil:nil:view:@"send"] position:@"Right":self.sColor:self.selectedColor];
 	RELEASE_TO_NIL(label);
 }
@@ -207,7 +207,7 @@
 -(void)sendMessage:(NSString *)text;
 {	
     if(!self.sColor)
-        self.sColor = @"Green";
+        self.sColor = @"White";
 	
 	[[self label:text:nil:nil:@"send"] position:@"Right":self.sColor:self.selectedColor];
 	RELEASE_TO_NIL(label);
