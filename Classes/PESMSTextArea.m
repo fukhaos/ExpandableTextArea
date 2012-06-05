@@ -15,7 +15,7 @@
 @synthesize text;
 @synthesize hasCam;
 @synthesize firstTime;
-//@synthesize folder;
+@synthesize folder;
 @synthesize maxLines;
 @synthesize minLines;
 
@@ -34,9 +34,9 @@
 
 -(NSString*)getNormalizedPath:(NSString*)source
 {
-	/*if(!self.folder)
+	if(!self.folder)
 		self.folder = @"";
-	source = [self.folder stringByAppendingString:source];*/
+	source = [self.folder stringByAppendingString:source];
 	
 	if ([source hasPrefix:@"file:/"]) {
 		NSURL* url = [NSURL URLWithString:source];

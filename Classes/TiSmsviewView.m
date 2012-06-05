@@ -22,7 +22,7 @@
 @synthesize autocorrect;
 @synthesize beditable;
 @synthesize hasCam;
-//@synthesize folder;
+@synthesize folder;
 @synthesize buttonTitle;
 @synthesize shouldAnimate;
 @synthesize sendDisabled;
@@ -356,11 +356,11 @@
 			[[[self textArea] textView] setTextAlignment:self.textAlignment];
 		if(self.value)
 			[[[self textArea] textView]setText:self.value];
-		/*if(self.folder)
+		if(self.folder)
 		{
 			[[self textArea] setFolder:self.folder];
 			[[self scrollView] setFolder:self.folder];
-		}*/
+		}
         
 		if(self.buttonTitle)
 			[[self textArea] buttonTitle:self.buttonTitle];
@@ -473,15 +473,14 @@
 	self.shouldAnimate = [TiUtils boolValue:args];
 }
 
--(void)setAssets_:(id)args
+-(void)setFolder_:(id)args
 {
-	/*self.folder =  [[TiUtils stringValue:args] stringByAppendingString:@"/"];
+	self.folder =  [[TiUtils stringValue:args] stringByAppendingString:@"/"];
 	if(!self.firstTime)
 	{
 		[[self textArea] setFolder:args];
 		[[self scrollView] setFolder:args];
 	}
-     */
 }
 
 -(void)setBackgroundLeftCap_:(id)args

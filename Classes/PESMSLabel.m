@@ -21,7 +21,7 @@
 @synthesize selectedColor;
 @synthesize textValue;
 @synthesize innerView;
-//@synthesize folder;
+@synthesize folder;
 @synthesize imageValue;
 @synthesize prox;
 @synthesize index_;
@@ -138,6 +138,7 @@
 		[self addGestureRecognizer:hold];
 		[hold release];
 		label = [[UILabel alloc] init];
+        label.font= [UIFont systemFontOfSize:14.0f];
 		label.numberOfLines = 0;
 		label.backgroundColor = [UIColor clearColor];
 		self.isText = YES;
@@ -156,15 +157,15 @@
 		
 	}
 	CGRect a = [self label].frame;
-	a.size.width +=25;
-	a.size.height +=10;
-	a.origin.y = 10;
-	a.origin.x = 5;
+	a.size.width += 14;
+	a.size.height += 10;
+	a.origin.y = 0;
+	a.origin.x = 0;
 	self.frame = a;
 	
 	CGRect b = [self label].frame;
-	b.origin.y = 3;
-	b.origin.x = 15;
+	b.origin.x = 7;	
+    b.origin.y = 5;
 	[[self label] setFrame:b];
 }
 
@@ -258,10 +259,10 @@
 
 -(NSString *)pathOfImage:(NSString *)pos:(NSString *)color
 {
-	/*if(!self.folder)
-		self.folder = @"";*/
 	NSString *imgName = [[[color stringByAppendingString:@"Balloon"] stringByAppendingString:pos] stringByAppendingString:@".png" ];
-	return [self resourcesDir:imgName];
+    imgName = [[[TiHost resourcePath] stringByAppendingPathComponent:self.folder] stringByAppendingPathComponent:imgName];
+    
+	return imgName;
 }
 
 -(void)position:(NSString *)pos:(NSString *)color:(NSString *)selCol
@@ -292,7 +293,7 @@
 		if(self.isText)
 		{
 			CGRect a = [self label].frame;
-			a.origin.x +=5;
+			a.origin.x += 8;
 			[[self label] setFrame:a];
 		}
 		if(self.isImage)
@@ -314,7 +315,7 @@
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 	}
 	else if([pos isEqualToString:@"Right"])
-	{
+	{        
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 		CGRect a = self.frame;
 		a.origin.x = (self.superview.frame.size.width-self.frame.size.width)-8;
@@ -324,8 +325,7 @@
 	else if([pos isEqualToString:@"Center"])
 	{
         //only used by addLabel currently
-        self.label.font= [UIFont boldSystemFontOfSize:14];
-        self.label.textColor = [UIColor grayColor];
+        //self.label.textColor = [UIColor grayColor];
 		self.label.textAlignment = UITextAlignmentCenter;
 		CGRect a = self.frame;
         a.size.width = self.superview.frame.size.width;///2-a.size.width/2;

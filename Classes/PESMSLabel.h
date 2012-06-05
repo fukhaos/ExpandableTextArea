@@ -26,7 +26,7 @@
 @property(nonatomic, retain)NSString *textValue;
 @property(nonatomic, retain)UILabel *label;
 @property(nonatomic, retain)UIView *innerView;
-//@property(nonatomic, retain)NSString *folder;
+@property(nonatomic, retain)NSString *folder;
 @property(nonatomic, retain)TiProxy *prox;
 @property(nonatomic, retain)UIImage *imageValue;
 @property(nonatomic)BOOL isImage;

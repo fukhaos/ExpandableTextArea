@@ -16,7 +16,7 @@
 @synthesize rColor;
 @synthesize animated;
 @synthesize selectedColor;
-//@synthesize folder;
+@synthesize folder;
 @synthesize allMessages;
 @synthesize numberOfMessage;
 @synthesize tempDict;
@@ -81,7 +81,7 @@
 	[self performSelectorOnMainThread:@selector(reloadContentSize) withObject:nil waitUntilDone:YES];
 
 	label = [[PESMSLabel alloc] init];
-	//[label setFolder:self.folder];
+	[label setFolder:self.folder];
     if (self.backgroundLeftCap != nil) {
         label.backgroundLeftCap = self.backgroundLeftCap;
     }
@@ -110,7 +110,7 @@
 		[self.tempDict setObject:view.proxy forKey:pos];
 	}
 	CGRect frame = label.frame;
-	frame.origin.y += labelsPosition.origin.y;	
+	frame.origin.y += labelsPosition.origin.y == 0 ? 10 : labelsPosition.origin.y;	
 	[label setFrame:frame];
 	
 	CGRect a = self.labelsPosition;

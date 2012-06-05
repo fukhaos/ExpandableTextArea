@@ -33,6 +33,7 @@ var win = Ti.UI.createWindow({
 });
 
 var textArea = Ti.SMSView.createView({
+	folder: 'images',
 	backgroundLeftCap: 16,
 	backgroundTopCap: 9,
 	//maxLines:6,				// <--- Defaults to 4
@@ -80,7 +81,7 @@ textArea.addEventListener('click', function(e){
 });
 textArea.addEventListener('buttonClicked', function(e){
 	// fires when clicked on the send button
-    textArea.addLabel(new Date()+"");
+    //textArea.addLabel(new Date()+"");
     textArea.sendMessage(e.value);
 });
 textArea.addEventListener('camButtonClicked', function(){
