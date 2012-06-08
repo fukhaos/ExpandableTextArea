@@ -151,7 +151,7 @@
         [UIView commitAnimations];
         [[self scrollView] reloadContentSize];
     }
-    // APPEARS FROM LEFT RIGHT (NAVIGATION CONTROLLER, OPENING/CLOSING WINDOW)
+    // APPEARS FROM RIGHT TO RIGHT (NAVIGATION CONTROLLER, OPENING WINDOW)
     else if (portrait && keyboardFrameBegin.origin.y == keyboardFrameEnd.origin.y) { 
         textareaFrame.origin.x = keyboardFrameEnd.origin.x;
         textareaFrame.origin.y = self.frame.size.height - keyboardFrameEnd.size.height - textareaFrame.size.height;        
@@ -173,7 +173,7 @@
     bottomOfWin = portrait ? keyboardFrameEnd.size.height : keyboardFrameEnd.size.width;
 }
 
--(void) keyboardWillHide:(NSNotification *)note
+-(void)keyboardWillHide:(NSNotification *)note
 {
     NSDictionary* userInfo = note.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
@@ -181,20 +181,21 @@
     CGRect keyboardFrameBegin = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
     CGRect keyboardFrameEnd = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
-    CGRect textareaFrame, scrollViewFrame;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    BOOL portrait = orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown;
     
-    // from left to right
-    if (keyboardFrameBegin.origin.x < keyboardFrameEnd.origin.x) { 
-        // do nothing!
-    }
-    // from top to bottom
-    else if (keyboardFrameBegin.origin.y < keyboardFrameEnd.origin.y) { 
-        textareaFrame = [self textArea].frame;
+    CGRect textareaFrame = [self textArea].frame, scrollViewFrame = [self scrollView].frame;
+    
+    // DISAPPEARS TOP TO BOTTOM
+    if (
+        (portrait && keyboardFrameBegin.origin.x == keyboardFrameEnd.origin.x) ||
+        (!portrait && keyboardFrameBegin.origin.y == keyboardFrameEnd.origin.y)
+        ) 
+    { 
         textareaFrame.origin.y = self.frame.size.height - textareaFrame.size.height;
         
-        scrollViewFrame = [self scrollView].frame;	
         scrollViewFrame.size.height = self.frame.size.height - textareaFrame.size.height;
-
+        
         [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView setAnimationDelay:0];
@@ -202,8 +203,15 @@
         
         [self textArea].frame = textareaFrame;
         [self scrollView].frame = scrollViewFrame;
-
+        
         [UIView commitAnimations];
+    }
+    // DISAPPEARS FROM LEFT TO RIGHT (NAVIGATION CONTROLLER, CLOSING WINDOW)
+    else if (
+             (portrait && keyboardFrameBegin.origin.y == keyboardFrameEnd.origin.y) ||
+             (!portrait && keyboardFrameBegin.origin.x == keyboardFrameEnd.origin.x)
+             ) 
+    { 
     }
 	bottomOfWin = 0.0;
 }
