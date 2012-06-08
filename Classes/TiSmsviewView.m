@@ -6,36 +6,39 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "TiSmsviewView.h"
 #import "TiBase.h"
 #import "TiUtils.h"
 #import "TiHost.h"
 
-
 @implementation TiSmsviewView
+
 @synthesize value;
-@synthesize firstTime;
-@synthesize returnType;
-@synthesize font;
-@synthesize textColor;
-@synthesize textAlignment;
-@synthesize autocorrect;
-@synthesize beditable;
-@synthesize hasCam;
-@synthesize folder;
-@synthesize buttonTitle;
-@synthesize shouldAnimate;
-@synthesize sendDisabled;
-@synthesize camDisabled;
-@synthesize hasTabbar;
-@synthesize bottomOfWin;
 
 -(void)dealloc
 {
-	RELEASE_TO_NIL(textArea);
-	RELEASE_TO_NIL(scrollView);
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    RELEASE_TO_NIL(textColor);
+    RELEASE_TO_NIL(sendColor);
+    RELEASE_TO_NIL(recieveColor);
+    RELEASE_TO_NIL(selectedColor);
+    RELEASE_TO_NIL(backgroundTopCap);
+    RELEASE_TO_NIL(backgroundLeftCap);
+    RELEASE_TO_NIL(folder);
+    RELEASE_TO_NIL(buttonTitle);
+    RELEASE_TO_NIL(font);
+    RELEASE_TO_NIL(scrollView);
+    RELEASE_TO_NIL(textArea);
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:UIKeyboardWillShowNotification 
+                                                  object:nil];
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:UIKeyboardWillHideNotification 
+                                                  object:nil];
 	
 	[super dealloc];
 }
@@ -44,15 +47,26 @@
 {
     if(self = [super init])
 	{
-		self.firstTime = YES;
-		self.autocorrect = YES;
-		self.beditable = YES;
-		self.hasCam = NO;
-		self.shouldAnimate = YES;
-		self.sendDisabled = NO;
-		self.camDisabled = NO;
-		self.hasTabbar = NO;
-		self.bottomOfWin = 0.0;
+		firstTime = YES;
+		autocorrect = YES;
+		beditable = YES;
+		hasCam = NO;
+		shouldAnimate = YES;
+		sendDisabled = NO;
+		camDisabled = NO;
+		hasTabbar = NO;
+		bottomOfWin = 0.0;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(keyboardWillShow:) 
+                                                     name:UIKeyboardWillShowNotification 
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(keyboardWillHide:) 
+                                                     name:UIKeyboardWillHideNotification 
+                                                   object:nil];	
+
 	}
 	return self;
 }
@@ -63,6 +77,7 @@
 {
 	if(!textArea){
 		textArea = [[PESMSTextArea alloc] initWithFrame:self.frame];
+        [textArea becomeTextView];
 		textArea.delegate = self;
 	}
 	return textArea;
@@ -78,85 +93,119 @@
 		a.origin.y = 0;
 		scrollView = [[PESMSScrollView alloc] initWithFrame:a];
 		clickGestureRecognizer = [[UITapGestureRecognizer alloc]
-														  initWithTarget:self action:@selector(handleClick:)];
+														  initWithTarget:self 
+                                  action:@selector(handleClick:)];
 		clickGestureRecognizer.numberOfTapsRequired = 1; 
 		[scrollView addGestureRecognizer:clickGestureRecognizer];
+        [clickGestureRecognizer release];
 	}
 	return scrollView;
 }
 
 #pragma mark Keyboard stuff
 
--(NSInteger)keyboardHeight:(NSNotification *)val
+-(void)keyboardWillShow:(NSNotification *)note
 {
-    // get keyboard size and location
-	NSDictionary* info = [val userInfo];
-	NSValue* aValue = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
-	CGSize keyboardSize = [aValue CGRectValue].size;
-	int tabHeight = 0;
-	if(self.hasTabbar == YES){
-		tabHeight = 49;
-	}
-	
-	if ([[UIApplication sharedApplication]statusBarOrientation] == UIDeviceOrientationPortrait ||
-		[[UIApplication sharedApplication]statusBarOrientation] == UIDeviceOrientationPortraitUpsideDown)
-		self.bottomOfWin = keyboardSize.height - tabHeight;
-	 else
-		self.bottomOfWin = keyboardSize.width - tabHeight;
-		
-	return self.bottomOfWin;
+    NSDictionary* userInfo = note.userInfo;
+    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    CGRect keyboardFrameBegin = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect keyboardFrameEnd = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    BOOL portrait = orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown;
+    
+    CGRect textareaFrame = [self textArea].frame, scrollViewFrame = [self scrollView].frame;
+
+    // APPEARS FROM BOTTOM TO TOP
+    if (portrait && keyboardFrameBegin.origin.x == keyboardFrameEnd.origin.x) { 
+        textareaFrame.origin.y = self.frame.size.height - textareaFrame.size.height - keyboardFrameEnd.size.height;
+        scrollViewFrame.size.height = textareaFrame.origin.y;
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationDelay:0];
+        [UIView setAnimationDuration:duration];
+        
+        [self textArea].frame = textareaFrame;
+        [self scrollView].frame = scrollViewFrame;
+        
+        [UIView commitAnimations];
+        [[self scrollView] reloadContentSize];
+    }
+    else if (!portrait && keyboardFrameBegin.origin.y == keyboardFrameEnd.origin.y) { 
+        textareaFrame.origin.x = 0.0f;
+        textareaFrame.origin.y = self.frame.size.height - keyboardFrameEnd.size.width - textareaFrame.size.height;
+
+        scrollViewFrame.origin.x = 0.0f;
+        scrollViewFrame.size.height = textareaFrame.origin.y;
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationDelay:0];
+        [UIView setAnimationDuration:duration];
+        
+        [self textArea].frame = textareaFrame;
+        [self scrollView].frame = scrollViewFrame;
+        
+        [UIView commitAnimations];
+        [[self scrollView] reloadContentSize];
+    }
+    // APPEARS FROM LEFT RIGHT (NAVIGATION CONTROLLER, OPENING/CLOSING WINDOW)
+    else if (portrait && keyboardFrameBegin.origin.y == keyboardFrameEnd.origin.y) { 
+        textareaFrame.origin.x = keyboardFrameEnd.origin.x;
+        textareaFrame.origin.y = self.frame.size.height - keyboardFrameEnd.size.height - textareaFrame.size.height;        
+        scrollViewFrame.size.height = textareaFrame.origin.y;
+        
+        [self textArea].frame = textareaFrame;
+        [self scrollView].frame = scrollViewFrame;
+    }
+    else if (!portrait && keyboardFrameBegin.origin.x == keyboardFrameEnd.origin.x) { 
+        textareaFrame.origin.x = 0.0f;
+        textareaFrame.origin.y = self.frame.size.height - keyboardFrameEnd.size.width - textareaFrame.size.height;        
+
+        scrollViewFrame.origin.x = 0.0f;
+        scrollViewFrame.size.height = textareaFrame.origin.y;
+        
+        [self textArea].frame = textareaFrame;
+        [self scrollView].frame = scrollViewFrame;
+    }
+    bottomOfWin = portrait ? keyboardFrameEnd.size.height : keyboardFrameEnd.size.width;
 }
 
-//Code from Brett Schumann
--(void) keyboardWillShow:(NSNotification *)note{
-	
-	// get the height since this is the main value that we need.
-	NSInteger kbSizeH = [self keyboardHeight:note];
-	
-	// get a rect for the textView frame
-	CGRect containerFrame = [self textArea].frame;
-	containerFrame.origin.y -= kbSizeH;
-	CGRect scrollViewFrame = [self scrollView].frame;	
-	scrollViewFrame.size.height -=kbSizeH;
-	
-	// animations settings
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:0.25f];
-	
-	// set views with new info
-	[self scrollView].frame = scrollViewFrame;
-	[self textArea].frame = containerFrame;
-	
-	// commit animations
-	[UIView commitAnimations];
-	[[self scrollView] reloadContentSize];
-}
+-(void) keyboardWillHide:(NSNotification *)note
+{
+    NSDictionary* userInfo = note.userInfo;
+    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    CGRect keyboardFrameBegin = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect keyboardFrameEnd = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    CGRect textareaFrame, scrollViewFrame;
+    
+    // from left to right
+    if (keyboardFrameBegin.origin.x < keyboardFrameEnd.origin.x) { 
+        // do nothing!
+    }
+    // from top to bottom
+    else if (keyboardFrameBegin.origin.y < keyboardFrameEnd.origin.y) { 
+        textareaFrame = [self textArea].frame;
+        textareaFrame.origin.y = self.frame.size.height - textareaFrame.size.height;
+        
+        scrollViewFrame = [self scrollView].frame;	
+        scrollViewFrame.size.height = self.frame.size.height - textareaFrame.size.height;
 
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationDelay:0];
+        [UIView setAnimationDuration:duration];
+        
+        [self textArea].frame = textareaFrame;
+        [self scrollView].frame = scrollViewFrame;
 
--(void) keyboardWillHide:(NSNotification *)note{
-
-	// get the height since this is the main value that we need.
-	NSInteger kbSizeH = [self keyboardHeight:note];
-
-	// get a rect for the textView frame
-	CGRect containerFrame = [self textArea].frame;
-	containerFrame.origin.y += kbSizeH;
-	CGRect scrollViewFrame = [self scrollView].frame;	
-	scrollViewFrame.size.height +=kbSizeH;
-	
-	// animations settings
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:0.25f];
-	
-	// set views with new info
-	[[self scrollView]setFrame: scrollViewFrame];
-	[[self textArea] setFrame: containerFrame];
-	
-	// commit animations
-	[UIView commitAnimations];
-	self.bottomOfWin = 0.0;
+        [UIView commitAnimations];
+    }
+	bottomOfWin = 0.0;
 }
 
 -(void)heightOfTextViewDidChange:(float)height
@@ -200,6 +249,7 @@
 -(void)recieveImageView:(TiUIView *)view
 {
 	ENSURE_UI_THREAD(recieveImageView, view);
+    
 	[[self scrollView] recieveImageView:view];
 	[[self scrollView] reloadContentSize];
 }
@@ -207,6 +257,7 @@
 -(void)sendMessage:(NSString *)msg
 {
 	ENSURE_UI_THREAD(sendMessage,msg);
+
 	if([msg isEqualToString:@""])
 		return;
 	[[self scrollView] sendMessage:msg];
@@ -230,7 +281,7 @@
 	[[self scrollView] animate:NO];	
 	[[self scrollView] addLabel:msg];
 	[[self scrollView] reloadContentSize];
-	[[self scrollView] animate:self.shouldAnimate];	
+	[[self scrollView] animate:shouldAnimate];	
 }
 
 -(void)empty
@@ -240,7 +291,7 @@
 
 -(NSArray *)getMessages
 {
-	return [[self scrollView] allMessages];
+	return [self scrollView].allMessages;
 }
 
 #pragma mark Event listeners
@@ -266,9 +317,8 @@
 	[tiEvent setObject:text forKey:@"value"];
 	[self.proxy fireEvent:@"change" withObject:tiEvent];
 	
-	self.value = text;
+	value = text;
 }
-
 
 -(void)handleClick:(UITapGestureRecognizer*)recognizer
 {
@@ -293,7 +343,8 @@
 		if(a.isView)
 			[tiEvent setObject:a.prox forKey:@"view"];
 		[tiEvent setObject:[NSString stringWithFormat:@"%i",a.index_] forKey:@"index"];
-	} else {
+	} 
+    else {
 		where = @"scrollView";
 		[tiEvent setObject:@"scrollView" forKey:@"scrollView"];
 	}
@@ -308,17 +359,20 @@
 {
 	
 	NSMutableDictionary *tiEvent = [NSMutableDictionary dictionary];
-	if(text)
+	
+    if(text) {
 		[tiEvent setObject:text forKey:@"text"];
-	if(image)
-	{
+    }
+
+	if(image) {
 		TiBlob *blob = [[[TiBlob alloc] initWithImage:image] autorelease];
 		[tiEvent setObject:blob forKey:@"image"];
 	}
-	if(view)
-	{
+
+	if(view) {
 		[tiEvent setObject:view forKey:@"view"];
 	}
+
 	[self.proxy fireEvent:@"messageClicked" withObject:tiEvent];
 }
 
@@ -338,201 +392,223 @@
 	float meh = h - 40;
     a.size.height = meh;
 	
-	if(self.firstTime == YES)
-	{
-		self.firstTime = NO;
-		[self addSubview: [self scrollView]];
-		[self addSubview: [self textArea]];
-		if(![self.proxy valueForUndefinedKey:@"backgroundColor"])
-		   self.backgroundColor = [[TiUtils colorValue:(id)@"#dae1eb"] _color];
+	if (firstTime == YES) {
+		firstTime = NO;
 		
-		if(self.returnType)
-			[[[self textArea] textView] setReturnKeyType:self.returnType];
-		if(self.font)
-			[[[self textArea] textView] setFont:[self.font font]];
-		if(self.textColor)
-			[[[self textArea] textView] setTextColor:[self.textColor _color]];
-		if(self.textAlignment)
-			[[[self textArea] textView] setTextAlignment:self.textAlignment];
-		if(self.value)
-			[[[self textArea] textView]setText:self.value];
-		if(self.folder)
-		{
-			[[self textArea] setFolder:self.folder];
-			[[self scrollView] setFolder:self.folder];
+        [self addSubview: [self scrollView]];
+		[self addSubview: [self textArea]];
+        
+		//if(![self.proxy valueForUndefinedKey:@"backgroundColor"])
+        //self.backgroundColor = [[TiUtils colorValue:(id)@"#dae1eb"] _color];
+		
+		if (returnType)
+            [[self textArea] textView].returnKeyType = returnType;
+        
+		if (font)
+			[[self textArea] textView].font = font;
+        
+		if (textColor)
+			[[self textArea] textView].textColor = textColor;
+        
+		if (textAlignment)
+			[[self textArea] textView].textAlignment = textAlignment;
+        
+		if (value)
+			[[self textArea] textView].text = value;
+        
+		if (folder) {
+			[self textArea].folder = folder;
+			[self scrollView].folder = folder;
 		}
         
-		if(self.buttonTitle)
-			[[self textArea] buttonTitle:self.buttonTitle];
-		[[self textArea] setCamera:self.hasCam];
-		[[[self textArea] textView] setEditable:self.beditable];
-		[[[self textArea] textView] setAutocorrectionType:self.autocorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo];
+		if(buttonTitle)
+			[[self textArea] buttonTitle:buttonTitle];
+        
+		[[self textArea] setCamera:hasCam];
+		[[[self textArea] textView] setEditable:beditable];
+		[[[self textArea] textView] setAutocorrectionType:autocorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo];
 		[[[self textArea] textView] setDataDetectorTypes:UIDataDetectorTypeAll];
-		if(self.sendDisabled)
-			[[self textArea] disableDoneButon:self.sendDisabled];
-		if(self.camDisabled)	
-			[[self textArea] disableCamButon:self.camDisabled];
+		if(sendDisabled)
+			[[self textArea] disableDoneButon:sendDisabled];
+		if(camDisabled)	
+			[[self textArea] disableCamButon:camDisabled];
 			
 
 	}
+
 	[[self scrollView] setFrame:a];
 	[[self scrollView] reloadContentSize];
-	[[self textArea] resize:self.bottomOfWin];
+	[[self textArea] resize:bottomOfWin];
 }
 
 #pragma mark Titanium's setters
 
 -(void)setCamButton_:(id)args
 {
-	self.hasCam = [TiUtils boolValue:args];
-	if(!self.firstTime)
-	{
-		[[self textArea] setCamera:self.hasCam];
-		[[self textArea] resize:self.bottomOfWin];
+	hasCam = [TiUtils boolValue:args];
+	if(!firstTime) {
+		[[self textArea] setCamera:hasCam];
+		[[self textArea] resize:bottomOfWin];
 	}
 }	
 
 -(void)setSendColor_:(id)col
 {
-    [[self scrollView] performSelectorOnMainThread:@selector(sendColor:) withObject:[TiUtils stringValue:col] waitUntilDone:YES];
+    RELEASE_TO_NIL(sendColor);
+    sendColor = [[TiUtils stringValue:col] retain];
+    [[self scrollView] performSelectorOnMainThread:@selector(sendColor:) withObject:sendColor waitUntilDone:YES];
 }
 
 -(void)setRecieveColor_:(id)col
 {
-    [[self scrollView] performSelectorOnMainThread:@selector(recieveColor:) withObject:[TiUtils stringValue:col] waitUntilDone:YES];
-	
+    RELEASE_TO_NIL(recieveColor);
+    recieveColor = [[TiUtils stringValue:col] retain];
+    [[self scrollView] performSelectorOnMainThread:@selector(recieveColor:) withObject:recieveColor waitUntilDone:YES];	
 }
 
 -(void)setSelectedColor_:(id)col
 {
-	[[self scrollView] performSelectorOnMainThread:@selector(selectedColor:) withObject:[TiUtils stringValue:col] waitUntilDone:YES];
-}
-
--(void)setButtonTitle_:(id)title
-{
-	self.buttonTitle = [TiUtils stringValue:title];
-	if(!self.firstTime)
-	{
-		[[self textArea] buttonTitle:[TiUtils stringValue:title]];
-		[[self scrollView] reloadContentSize];
-	}
+    RELEASE_TO_NIL(selectedColor);
+    selectedColor = [[TiUtils stringValue:col] retain];
+	[[self scrollView] performSelectorOnMainThread:@selector(selectedColor:) withObject:selectedColor waitUntilDone:YES];
 }
 
 -(void)setReturnKeyType_:(id)val
 {
-	self.returnType = [TiUtils intValue:val];
-	if(!self.firstTime)
-		[[[self textArea] textView] setReturnKeyType:self.returnType];
+	returnType = [TiUtils intValue:val];
+	if(!firstTime)
+		[[[self textArea] textView] setReturnKeyType:returnType];
+}
+
+-(void)setButtonTitle_:(id)title
+{
+    RELEASE_TO_NIL(buttonTitle);
+	buttonTitle = [[TiUtils stringValue:title] retain];
+	if(!firstTime) {
+		[[self textArea] buttonTitle:buttonTitle];
+		[[self scrollView] reloadContentSize];
+	}
 }
 
 -(void)setFont_:(id)val
 {
-	self.font = [TiUtils fontValue:val def:nil];
-	if(!self.firstTime)
-		[[[self textArea] textView] setFont:[self.font font]];
+    RELEASE_TO_NIL(font);
+	font = [[[TiUtils fontValue:val def:nil] font] retain];
+	if(!firstTime) {
+		[[[self textArea] textView] setFont:font];
+    }
 }
 
 -(void)setTextColor_:(id)val
 {
-	self.textColor = [TiUtils colorValue:val];
-	if(!self.firstTime)
-		[[[self textArea] textView] setTextColor:[self.textColor _color]];
+    RELEASE_TO_NIL(textColor);
+	textColor = [[[TiUtils colorValue:val] _color] retain];
+	if(!firstTime) {
+        [[[self textArea] textView] setTextColor:textColor];
+    }
 }
 
 -(void)setTextAlignment_:(id)val
 {
-	self.textAlignment = [TiUtils textAlignmentValue:val];
-	if(!self.firstTime)
-		[[[self textArea] textView] setTextAlignment:self.textAlignment];
+	textAlignment = [TiUtils textAlignmentValue:val];
+	if(!firstTime)
+		[[[self textArea] textView] setTextAlignment:textAlignment];
 }
 
 -(void)setAutocorrect_:(id)val
 {
-	self.autocorrect = [TiUtils boolValue:val];
-	if(!self.firstTime)
+	autocorrect = [TiUtils boolValue:val];
+	if(!firstTime)
 		[[[self textArea] textView ]setAutocorrectionType:[TiUtils boolValue:val] ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo];
 }
 
 -(void)setEditable_:(id)val
 {
-	self.beditable = [TiUtils boolValue:val];
-	if(!self.firstTime)
-		[[[self textArea] textView] setEditable:self.beditable];
+	beditable = [TiUtils boolValue:val];
+	if(!firstTime)
+		[[[self textArea] textView] setEditable:beditable];
 }
 
 -(void)setValue_:(id)val
 {
-	self.value = [TiUtils stringValue:val];
-	if(!self.firstTime)
-		[[[self textArea] textView]setText:self.value];
+    RELEASE_TO_NIL(value);
+	value = [[TiUtils stringValue:val] retain];
+	if(!firstTime)
+		[[[self textArea] textView]setText:value];
 }
 
 -(void)setAnimated_:(id)args
 {
-	[[self scrollView] animate:[TiUtils boolValue:args]];
-	self.shouldAnimate = [TiUtils boolValue:args];
+	shouldAnimate = [TiUtils boolValue:args];
+	[[self scrollView] animate:shouldAnimate];
 }
 
 -(void)setFolder_:(id)args
 {
-	self.folder =  [[TiUtils stringValue:args] stringByAppendingString:@"/"];
-	if(!self.firstTime)
+    RELEASE_TO_NIL(folder);
+	folder =  [[TiUtils stringValue:args] retain];
+	if(!firstTime)
 	{
-		[[self textArea] setFolder:args];
-		[[self scrollView] setFolder:args];
+		[[self textArea] setFolder:folder];
+		[[self scrollView] setFolder:folder];
 	}
 }
 
 -(void)setBackgroundLeftCap_:(id)args
 {
-    [self textArea].backgroundLeftCap = [TiUtils numberFromObject:args];
-    [self scrollView].backgroundLeftCap = [TiUtils numberFromObject:args];
+    RELEASE_TO_NIL(backgroundLeftCap);
+    backgroundLeftCap = [[TiUtils numberFromObject:args] retain];
+    [self textArea].backgroundLeftCap = backgroundLeftCap;
+    [self scrollView].backgroundLeftCap = backgroundLeftCap;
 }
 
 -(void)setBackgroundTopCap_:(id)args
 {
-    [self textArea].backgroundTopCap = [TiUtils numberFromObject:args];
-    [self scrollView].backgroundTopCap = [TiUtils numberFromObject:args];
+    RELEASE_TO_NIL(backgroundTopCap);
+    backgroundTopCap = [[TiUtils numberFromObject:args] retain];
+    [self textArea].backgroundTopCap = backgroundTopCap;
+    [self scrollView].backgroundTopCap = backgroundTopCap;
 }
-
  
 -(void)setReturnType_:(id)arg
 {
-	self.returnType = [TiUtils boolValue:arg];
-	if(!self.firstTime)
-		[[[self textArea] textView] setReturnKeyType:self.returnType];
+	returnType = [TiUtils boolValue:arg];
+	if(!firstTime)
+		[[[self textArea] textView] setReturnKeyType:returnType];
 }
 
 -(void)setMaxLines_:(id)arg
 {
-	[[self textArea] setMaxLines:[TiUtils intValue:arg]];	
+    maxLines = [TiUtils intValue:arg];
+	[[self textArea] setMaxLines:maxLines];	
 }
 
 -(void)setMinLines_:(id)arg
 {
-	[[self textArea] setMinLines:[TiUtils intValue:arg]];
+    minLines = [TiUtils intValue:arg];
+	[[self textArea] setMinLines:minLines];
 }
 
 -(void)setSendButtonDisabled_:(id)arg
 {
-	self.sendDisabled = [TiUtils boolValue:arg];
-	if(!self.firstTime)
+	sendDisabled = [TiUtils boolValue:arg];
+	if(!firstTime)
 	{
-		[[self textArea] disableDoneButon:self.sendDisabled];
+		[[self textArea] disableDoneButon:sendDisabled];
 	}
 }
 
 -(void)setHasTab_:(id)args
 {
-	self.hasTabbar = [TiUtils boolValue:args];
+	hasTabbar = [TiUtils boolValue:args];
 }
 
 -(void)setCamButtonDisabled_:(id)arg
 {
-	self.camDisabled = [TiUtils boolValue:arg];
-	if(!self.firstTime)
+	camDisabled = [TiUtils boolValue:arg];
+	if(!firstTime)
 	{
-		[[self textArea] disableCamButon:self.camDisabled];
+		[[self textArea] disableCamButon:camDisabled];
 	}
 }
 

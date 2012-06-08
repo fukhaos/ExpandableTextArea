@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "TiUIView.h"
 #import "PESMSTextArea.h"
 #import "PESMSScrollView.h"
@@ -14,27 +17,34 @@
 @interface TiSmsviewView : TiUIView<PESMSTextAreaDelegate> {
 	PESMSTextArea *textArea;
 	PESMSScrollView *scrollView;
+	UITapGestureRecognizer* clickGestureRecognizer;
+    NSString *value;
+    NSString *folder;
+    NSString *buttonTitle;
+    UIReturnKeyType returnType;
+    UIFont* font;
+    UIColor* textColor;
+    NSString* sendColor;
+    NSString* recieveColor;
+    NSString* selectedColor;
+    NSNumber* backgroundTopCap;
+    NSNumber* backgroundLeftCap;
+    
+    UITextAlignment textAlignment;
 	BOOL deallocOnce;
-	NSString *value;
-	UITapGestureRecognizer *clickGestureRecognizer;
+    BOOL firstTime;
+    BOOL hasCam;
+    BOOL autocorrect;
+    BOOL beditable;
+    BOOL shouldAnimate;
+    BOOL sendDisabled;
+    BOOL camDisabled;
+    BOOL hasTabbar;
+    int maxLines, minLines;
+    float bottomOfWin;
 }
 
-@property(nonatomic, retain)NSString *value;
-@property(nonatomic, retain)NSString *folder;
-@property(nonatomic, retain)NSString *buttonTitle;
-@property(nonatomic)BOOL firstTime;
-@property(nonatomic)UIReturnKeyType returnType;
-@property(nonatomic, retain)WebFont* font;
-@property(nonatomic, retain)TiColor *textColor;
-@property(nonatomic)UITextAlignment textAlignment;
-@property(nonatomic)BOOL autocorrect;
-@property(nonatomic)BOOL beditable;
-@property(nonatomic)BOOL hasCam;
-@property(nonatomic)BOOL shouldAnimate;
-@property(nonatomic)BOOL sendDisabled;
-@property(nonatomic)BOOL camDisabled;
-@property(nonatomic)BOOL hasTabbar;
-@property(nonatomic)float bottomOfWin;
+@property(nonatomic,assign) NSString* value;
 
 -(void)sendImageView:(TiUIView *)view;
 -(void)recieveImageView:(TiUIView *)view;
@@ -47,4 +57,5 @@
 -(void)_focus;
 -(void)empty;
 -(NSArray *)getMessages;
+
 @end

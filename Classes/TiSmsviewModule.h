@@ -4,6 +4,10 @@
  * Appcelerator Titanium is Copyright (c) 2009-2010 by Appcelerator, Inc.
  * and licensed under the Apache Public License (version 2)
  */
+
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "TiModule.h"
 
 @interface TiSmsviewModule : TiModule 

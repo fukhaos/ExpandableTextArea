@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "PESMSTextArea.h"
 #import "TiSmsviewView.h"
 #import "TiHost.h"
@@ -24,7 +27,6 @@
 
 -(void)dealloc
 {
-	
 	RELEASE_TO_NIL(textView);
 	RELEASE_TO_NIL(entryImageView);
 	RELEASE_TO_NIL(imageView);
@@ -32,23 +34,10 @@
 	[super dealloc];
 }
 
--(NSString*)getNormalizedPath:(NSString*)source
-{
-	if(!self.folder)
-		self.folder = @"";
-	source = [self.folder stringByAppendingString:source];
-	
-	if ([source hasPrefix:@"file:/"]) {
-		NSURL* url = [NSURL URLWithString:source];
-		return [url path];
-	}
-	
-	return source;
-}
-
 -(UIImage *)resourcesImage:(NSString *)url
 {
-	return [UIImage imageWithContentsOfFile:[[TiHost resourcePath] stringByAppendingPathComponent:[self getNormalizedPath:url]]];
+    NSString* imgName = [[[TiHost resourcePath] stringByAppendingPathComponent:self.folder] stringByAppendingPathComponent:url];
+	return [UIImage imageWithContentsOfFile:imgName];
 }
 
 
@@ -164,8 +153,7 @@
 	[entryImageView		setFrame: CGRectMake(5, 0, w-72, height)];
 	[doneBtn			setFrame: CGRectMake(w - 69, 8, 63, 27)];
 
-	if(self.hasCam)
-	{
+	if(self.hasCam) {
 		[textView		setFrame: CGRectMake(41, 3, w - 116, height)];
 		[entryImageView	setFrame: CGRectMake(40, 0, w-107, height)];
 		[camButton		setFrame: CGRectMake(5, 7, 30, 30)];
@@ -173,7 +161,8 @@
 	[[self doneBtn].titleLabel setAdjustsFontSizeToFitWidth:YES];
 	
 	// still a little buggy here
-	[[self textView] setText:self.text];
+    //NSLog(@"---------- %@", self.text);
+	//[[self textView] setText:self.text];
 }
 
 -(void)setCamera:(BOOL)val
@@ -204,7 +193,6 @@
 	{
 		self.backgroundColor = [UIColor clearColor];
 	}
-	//[self resize];
 	return self;
 }
 

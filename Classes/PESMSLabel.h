@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import <UIKit/UIKit.h>
 #import "TiUIView.h"
 #import "TiProxy.h"
@@ -14,29 +17,37 @@
 {
 	UILabel *label;
 	UIImageView *innerImage;
-	UIView *innerView;
 	UILongPressGestureRecognizer *hold;
+
+    NSString* textValue;
+    UIImage* imageValue;
+	UIView* innerView;
+    TiProxy* prox;
+    
+    NSString* thisColor;
+    int thisPos; // 0: left, 1: center, 2:right
+    
+    BOOL isImage;
+    BOOL isText;
+    BOOL isView;
+    int index_;
+    UIDeviceOrientation orient;
 }
 
-@property(nonatomic, retain)NSString *sColor;
-@property(nonatomic, retain)NSString *rColor;
-@property(nonatomic, retain)NSString *thisPos;
-@property(nonatomic, retain)NSString *thisColor;
-@property(nonatomic, retain)NSString *selectedColor;
-@property(nonatomic, retain)NSString *textValue;
-@property(nonatomic, retain)UILabel *label;
-@property(nonatomic, retain)UIView *innerView;
-@property(nonatomic, retain)NSString *folder;
-@property(nonatomic, retain)TiProxy *prox;
-@property(nonatomic, retain)UIImage *imageValue;
-@property(nonatomic)BOOL isImage;
-@property(nonatomic)BOOL isText;
-@property(nonatomic)BOOL isView;
-@property(nonatomic)int index_;
-@property(nonatomic)UIDeviceOrientation orient;
+@property(nonatomic, readonly) BOOL isImage;
+@property(nonatomic, readonly) BOOL isText;
+@property(nonatomic, readonly) BOOL isView;
+@property(nonatomic, readonly) NSString* textValue;
+@property(nonatomic, readonly) UIImage* imageValue;
+@property(nonatomic, readonly) TiProxy* prox;
+@property(nonatomic, assign) int index_;
 
-@property(nonatomic, retain)NSNumber *backgroundLeftCap;
-@property(nonatomic, retain)NSNumber *backgroundTopCap;
+@property(nonatomic, assign)NSString *sColor;
+@property(nonatomic, assign)NSString *rColor;
+@property(nonatomic, assign)NSString *selectedColor;
+@property(nonatomic, assign)NSString *folder;
+@property(nonatomic, assign)NSNumber *backgroundLeftCap;
+@property(nonatomic, assign)NSNumber *backgroundTopCap;
 
 -(void)addImage:(UIImage *)image;
 -(void)addText:(NSString *)text;

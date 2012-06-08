@@ -6,41 +6,48 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "PESMSLabel.h"
 #import "TiHost.h"
 
 @implementation PESMSLabel
 
-@synthesize rColor;
-@synthesize sColor;
+@synthesize index_;
 @synthesize isText;
 @synthesize isImage;
 @synthesize isView;
-@synthesize thisPos;
-@synthesize thisColor;
-@synthesize selectedColor;
 @synthesize textValue;
-@synthesize innerView;
-@synthesize folder;
 @synthesize imageValue;
 @synthesize prox;
-@synthesize index_;
-@synthesize orient;
-@synthesize label;
 
+@synthesize rColor;
+@synthesize sColor;
+@synthesize selectedColor;
+@synthesize folder;
 @synthesize backgroundLeftCap;
 @synthesize backgroundTopCap;
 
 -(void)dealloc
 {
-	if(self.isText)
-		RELEASE_TO_NIL(label);
-	if(self.isImage)
-		RELEASE_TO_NIL(innerImage);
-	if(self.isView)
-		RELEASE_TO_NIL(innerView);
+	if(isText) {
+        RELEASE_TO_NIL(label);
+        RELEASE_TO_NIL(textValue);
+    }
+		
+	if(isImage) {
+        RELEASE_TO_NIL(innerImage);
+        RELEASE_TO_NIL(imageValue);
+    }
+		
+	if(isView) {
+        RELEASE_TO_NIL(innerView);
+        RELEASE_TO_NIL(prox);
+    }
+    
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:[UIDevice currentDevice]];
-
+    
 	[super dealloc];
 }
 
@@ -83,7 +90,7 @@
 {
 	UIPasteboard *paste = [UIPasteboard generalPasteboard];
 	paste.persistent = YES;
-	[paste setString:self.textValue];	
+	[paste setString:textValue];	
 }
 
 - (void)orientationChanged:(NSNotification *)note
@@ -95,7 +102,7 @@
 		orientation == UIDeviceOrientationPortrait ||
 		orientation == UIDeviceOrientationPortraitUpsideDown)
 	{
-		if(orientation != orient && [self.thisPos isEqualToString:@"Right"])
+		if(orientation != orient && thisPos == 2)
 		{
 			CGRect a = self.frame;
 			a.origin.x = (self.superview.frame.size.width-self.frame.size.width)-5;
@@ -103,7 +110,7 @@
 			[self setNeedsDisplay];
 			orient = orientation;
 		}
-		if(orientation != orient && [self.thisPos isEqualToString:@"Center"])
+		if(orientation != orient && thisPos == 1)
 		{
 			CGRect a = self.frame;
 			a.size.width = self.superview.frame.size.width;///2-a.size.width/2;
@@ -125,7 +132,7 @@
 	if(!innerImage)
 	{
 		innerImage = [[UIImageView alloc] initWithImage:image];
-		self.isImage = YES;
+		isImage = YES;
 	}
 	return innerImage;
 }
@@ -136,12 +143,12 @@
 	{
 		hold = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(doLongTouch)];
 		[self addGestureRecognizer:hold];
-		[hold release];
+        [hold release];
 		label = [[UILabel alloc] init];
         label.font= [UIFont systemFontOfSize:14.0f];
 		label.numberOfLines = 0;
 		label.backgroundColor = [UIColor clearColor];
-		self.isText = YES;
+		isText = YES;
 	}
 	return label;
 }
@@ -187,18 +194,18 @@
 
 -(void)setUpInnerImageViewSize
 {
-	CGRect a = self.innerView.frame;
+	CGRect a = innerView.frame;
 	a.size.width +=25;
 	a.size.height +=20;
 	a.origin.y = 10;
 	a.origin.x = 10;
 	self.frame = a;
 	
-	CGRect b = self.innerView.frame;
+	CGRect b = innerView.frame;
 	b.origin.y = 8;	
 	b.origin.x = 10;
 	
-	[self.innerView setFrame:b];
+	[innerView setFrame:b];
 }
 
 -(BOOL)isUserInteractionEnabled
@@ -208,7 +215,7 @@
 
 -(void)addText:(NSString *)text
 {
-	self.textValue = text;
+	textValue = [text retain];
 	[[self label] performSelectorOnMainThread : @selector(setText:) withObject:text waitUntilDone:YES];
 	[self addSubview:[self label]];
 	[[self label] sizeToFit];
@@ -217,7 +224,7 @@
 
 -(void)addImage:(UIImage *)image
 {
-	self.imageValue = image;
+	imageValue = [image retain];
 	[self addSubview:[self innerImage:image]];
 	[[self innerImage:nil] sizeToFit];
 	[self setUpInnerImageImageSize];
@@ -226,9 +233,9 @@
 -(void)addImageView:(TiUIView *)view
 {
 	[view setUserInteractionEnabled:NO];
-	self.isView = YES;
-	self.prox = view.proxy;
-	self.innerView = view;
+	isView = YES;
+	innerView = [view retain];
+	prox = [view.proxy retain];
 	
 	//this is just a quick workaround, just for now
 	
@@ -274,9 +281,8 @@
 	if([selCol isEqualToString:@""] || !selCol)
 		selCol = @"White";
 	
-	self.thisColor = color;
-	self.thisPos = pos;
-	self.selectedColor = selCol;
+	thisColor = color;
+	selectedColor = selCol;
 	
 	NSString *imgName = [self pathOfImage:pos :color];
     
@@ -290,23 +296,24 @@
 	
 	if([pos isEqualToString:@"Left"])
 	{
-		if(self.isText)
+        thisPos = 0;
+		if(isText)
 		{
 			CGRect a = [self label].frame;
 			a.origin.x += 8;
 			[[self label] setFrame:a];
 		}
-		if(self.isImage)
+		if(isImage)
 		{
 			CGRect a = [self innerImage:nil].frame;
 			a.origin.x +=5;
 			[[self innerImage:nil] setFrame:a];
 		}
-		if(self.isView)
+		if(isView)
 		{
-			CGRect a = self.innerView.frame;
+			CGRect a = innerView.frame;
 			a.origin.x +=5;
-			[self.innerView setFrame:a];
+			[innerView setFrame:a];
 		}
 		
 		CGRect b = self.frame;
@@ -316,7 +323,8 @@
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 	}
 	else if([pos isEqualToString:@"Right"])
-	{        
+	{
+        thisPos = 2;
 		self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:leftCap topCapHeight:topCap];
 		CGRect a = self.frame;
 		a.size.width += 8; // padding
@@ -325,6 +333,7 @@
 	}
 	else if([pos isEqualToString:@"Center"])
 	{
+        thisPos = 1;
         //only used by addLabel currently
         //self.label.textColor = [UIColor grayColor];
 		self.label.textAlignment = UITextAlignmentCenter;
@@ -347,7 +356,7 @@
 
 -(void)resetImage
 {
-	self.image = [[UIImage imageWithContentsOfFile:[self pathOfImage:self.thisPos:self.thisColor]] stretchableImageWithLeftCapWidth:21 topCapHeight:14];
+	//image = [[UIImage imageWithContentsOfFile:[self pathOfImage:thisPos:thisColor]] stretchableImageWithLeftCapWidth:21 topCapHeight:14];
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -367,9 +376,22 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	NSString *imgName = [self pathOfImage:self.thisPos:self.selectedColor];
+    NSString* stringPos;
+    switch (thisPos) {
+        case 0:
+            stringPos = @"Left";
+            break;
+        case 1:
+            stringPos = @"Center";
+            break;
+        case 2:
+            stringPos = @"Right";
+            break;            
+        default:
+            break;
+    }
+	NSString *imgName = [self pathOfImage:stringPos:selectedColor];
 	self.image = [[UIImage imageWithContentsOfFile:imgName] stretchableImageWithLeftCapWidth:21 topCapHeight:14];
-
 }
 
 @end

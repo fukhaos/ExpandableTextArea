@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "PESMSTextLabel.h"
 
 @implementation PESMSTextLabel

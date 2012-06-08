@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "TiSmsviewView.h"
 #import "TiSmsviewViewProxy.h"
 #import "TiUtils.h"
@@ -30,40 +33,17 @@
 
 -(TiSmsviewView *)ourView
 {
-	if(!ourView)
-	{
+	if(!ourView) {
 		ourView = (TiSmsviewView *)[self view];
 	}
 	return ourView;
-}
-
--(void)viewDidAttach
-{
-	[[NSNotificationCenter defaultCenter] addObserver:[self ourView] 
-											 selector:@selector(keyboardWillShow:) 
-												 name:UIKeyboardWillShowNotification 
-											   object:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:[self ourView] 
-											 selector:@selector(keyboardWillHide:) 
-												 name:UIKeyboardWillHideNotification 
-											   object:nil];	
-	[self retain];
-	[super viewDidAttach];
-}
-
--(void)viewDidDetach
-{
-	[self autorelease];
-	[super viewDidDetach];
 }
 
 -(void)blur:(id)args
 {
 	ENSURE_UI_THREAD(blur, args);
 	
-	if([self viewAttached])
-	{
+	if([self viewAttached]) {
 		[[self ourView] _blur];
 	}
 }
@@ -71,8 +51,7 @@
 -(void)focus:(id)args
 {
 	ENSURE_UI_THREAD(focus, args);
-	if([self viewAttached])
-	{
+	if([self viewAttached]) {
 		[[self ourView] _focus];
 	}
 }
@@ -83,18 +62,15 @@
 	if([self viewAttached])
 	{
 		UIImage *image = nil;
-		if ([arg isKindOfClass:[UIImage class]]) 
-		{
+		if ([arg isKindOfClass:[UIImage class]]) {
 			image = (UIImage*)arg;
 		}
-		else if ([arg isKindOfClass:[TiBlob class]])
-		{
+		else if ([arg isKindOfClass:[TiBlob class]]) {
 			TiBlob *blob = (TiBlob*)arg;
 			image = [blob image];
 			
 		}
-		else
-		{
+		else {
 			NSLog(@"[WARN] The image MUST be a blob.");
 			NSLog(@"[WARN]");
 			NSLog(@"[WARN] This is a workaround:");
@@ -106,8 +82,7 @@
 			NSLog(@"[WARN]");
 		}
 		
-		if(image != nil)
-		{
+		if(image != nil) {
 			CGSize imageSize = image.size;		
 			if(imageSize.width > 270.0)//[[self ourView] superview].frame.size.width-100)
 			{
@@ -134,20 +109,19 @@
 
 -(void)sendMessage:(id)args
 {
-	ENSURE_UI_THREAD(sendMessage,args);
-	ENSURE_TYPE(args, NSArray);
 	if([self viewAttached])
 	{
 		id arg = [args objectAtIndex:0];
-		if([arg isKindOfClass:[NSString class]])
-			[ourView sendMessage:arg];
-		else if ([arg isKindOfClass:[TiViewProxy class]])
-		{
+		if([arg isKindOfClass:[NSString class]]) {
+			[[self ourView] sendMessage:arg];
+        }
+		else if ([arg isKindOfClass:[TiViewProxy class]]) {
 			TiViewProxy *a = arg;
-			[ourView sendImageView:a.view];
+			[[self ourView] sendImageView:a.view];
 		}
-		else
-			[ourView sendImage:[self returnImage:arg]];
+		else {
+			[[self ourView] sendImage:[self returnImage:arg]];
+        }
 	}
 }
 
@@ -160,15 +134,17 @@
 		
 		id arg = [args objectAtIndex:0];
 		
-		if([arg isKindOfClass:[NSString class]])
-			[ourView recieveMessage:arg];
+		if([arg isKindOfClass:[NSString class]]) {
+			[[self ourView] recieveMessage:arg];
+        }
 		else if ([arg isKindOfClass:[TiViewProxy class]])
 		{
 			TiViewProxy *a = arg;
-			[ourView recieveImageView:a.view];
+			[[self ourView] recieveImageView:a.view];
 		}
-		else
-			[ourView recieveImage:[self returnImage:arg]];
+		else {
+			[[self ourView] recieveImage:[self returnImage:arg]];
+        }
 	}
 }
 
@@ -179,8 +155,9 @@
 	if([self viewAttached])
 	{
 		id arg = [TiUtils stringValue: [args objectAtIndex:0]];
-		if([arg isKindOfClass:[NSString class]])
-			[ourView addLabel:arg];
+		if([arg isKindOfClass:[NSString class]]) {
+			[[self ourView] addLabel:arg];
+        }
 	}
 }
 
@@ -193,12 +170,11 @@
 		{
 			id obj = [args objectAtIndex:i];
 			ENSURE_SINGLE_ARG(obj, NSObject);
-			if([obj objectForKey:@"send"])
-			{
+
+			if([obj objectForKey:@"send"]) {
 				[self sendMessage: [NSArray arrayWithObject:[obj objectForKey:@"send"]]];
 			}
-			if([obj objectForKey:@"recieve"])
-			{
+			if([obj objectForKey:@"recieve"]) {
 				[self recieveMessage: [NSArray arrayWithObject:[obj objectForKey:@"recieve"]]];
 			}
 		}
@@ -207,18 +183,16 @@
 
 -(NSArray *)getAllMessages:(id)arg
 {
-	if([self viewAttached])
-	{
-		return [ourView getMessages];
+	if([self viewAttached]) {
+		return [[self ourView] getMessages];
 	}
 	return nil;
 }
 
 -(id)value
 {
-	if([self viewAttached])
-	{
-		return [[self ourView] value];
+	if([self viewAttached]) {
+		return [self ourView].value;
 	}
 	return nil;
 }

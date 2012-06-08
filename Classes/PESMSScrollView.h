@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import <UIKit/UIKit.h>
 #import "PESMSLabel.h"
 #import "PESMSTextLabel.h"
@@ -13,26 +16,22 @@
 
 
 @interface PESMSScrollView : UIScrollView {
-	UILabel *sentLabel;
-	UILabel *recieveLabel;
-	PESMSLabel *label;
-	PESMSTextLabel *textLabel;
-	NSMutableArray *allMessages;
-	NSMutableDictionary *tempDict;
+	NSMutableArray* allMessages;
+	NSMutableDictionary* tempDict;
 }
 
 @property(nonatomic) CGRect labelsPosition;
-@property(nonatomic, retain)NSString *sColor;
-@property(nonatomic, retain)NSString *rColor;
-@property(nonatomic, retain)NSString *selectedColor;
-@property(nonatomic, retain)NSString *folder;
-@property(nonatomic, retain)NSMutableArray *allMessages;
-@property(nonatomic, retain)NSMutableDictionary *tempDict;
+
 @property(nonatomic)BOOL animated;
 @property(nonatomic)int numberOfMessage;
+@property(nonatomic, assign)NSString *sColor;
+@property(nonatomic, assign)NSString *rColor;
+@property(nonatomic, assign)NSString *selectedColor;
+@property(nonatomic, assign)NSString *folder;
+@property(nonatomic, assign)NSNumber *backgroundLeftCap;
+@property(nonatomic, assign)NSNumber *backgroundTopCap;
 
-@property(nonatomic, retain)NSNumber *backgroundLeftCap;
-@property(nonatomic, retain)NSNumber *backgroundTopCap;
+@property(nonatomic,readonly)NSArray* allMessages;
 
 -(void)sendMessage:(NSString *)text;
 -(void)recieveMessage:(NSString *)text;

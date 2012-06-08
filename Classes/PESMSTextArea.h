@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import <UIKit/UIKit.h>
 #import "HPGrowingTextView.h"
 
@@ -35,15 +38,16 @@
 }
 
 @property(assign) NSObject<PESMSTextAreaDelegate> *delegate;
-@property(nonatomic, retain)NSString *text;
-@property(nonatomic, retain)NSString *folder;
-@property(nonatomic)BOOL hasCam;
-@property(nonatomic)BOOL firstTime;
-@property(nonatomic)int maxLines;
-@property(nonatomic)int minLines;
 
-@property(nonatomic, retain)NSNumber *backgroundLeftCap;
-@property(nonatomic, retain)NSNumber *backgroundTopCap;
+@property(nonatomic, assign) NSString* text;
+@property(nonatomic, assign) NSString* folder;
+@property(nonatomic, assign) NSNumber* backgroundLeftCap;
+@property(nonatomic, assign) NSNumber* backgroundTopCap;
+
+@property(nonatomic) BOOL hasCam;
+@property(nonatomic) BOOL firstTime;
+@property(nonatomic) int maxLines;
+@property(nonatomic) int minLines;
 
 -(void)resize:(float)bottom;
 -(void)resignTextView;

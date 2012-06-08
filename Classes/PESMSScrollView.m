@@ -6,6 +6,9 @@
 //  Copyright 2011 Appcelerator. All rights reserved.
 //
 
+// modified by jordi domenech on 6/2012
+// iamyellow.net jordi@iamyellow.net @iamyellow2 github.com/iamyellow
+
 #import "PESMSScrollView.h"
 #import "TiUtils.h"
 
@@ -17,29 +20,29 @@
 @synthesize animated;
 @synthesize selectedColor;
 @synthesize folder;
-@synthesize allMessages;
 @synthesize numberOfMessage;
-@synthesize tempDict;
-
 @synthesize backgroundLeftCap;
 @synthesize backgroundTopCap;
+@synthesize allMessages;
 
 -(void)dealloc
 {
 	RELEASE_TO_NIL(allMessages);
-	//[tempDict release];
+	RELEASE_TO_NIL(tempDict);
+
 	[super dealloc];
 }
 
 - (id)initWithFrame:(CGRect)aRect {
     self = [super initWithFrame:aRect];
     if (self) {
+        
 		self.labelsPosition = self.frame;
 		self.animated = YES;
-		tempDict = [[NSMutableDictionary alloc] init];
-		self.tempDict = tempDict;
+		
+        tempDict = [[NSMutableDictionary alloc] init];
 		allMessages = [[NSMutableArray alloc] init];
-		self.allMessages = allMessages;
+
 		self.numberOfMessage = 0;
 	}
     return self;
@@ -49,7 +52,7 @@
 {
 	[self performSelectorOnMainThread:@selector(reloadContentSize) withObject:nil waitUntilDone:YES];
 	
-	textLabel = [[PESMSTextLabel alloc] initWithFrame:self.frame];
+	PESMSTextLabel* textLabel = [[PESMSTextLabel alloc] initWithFrame:self.frame];
 	[textLabel addText:text];
 	
 	[textLabel resize:self.frame];
@@ -62,26 +65,26 @@
 	a.origin.y = frame.origin.y+frame.size.height;
 	self.labelsPosition = a;
     
-	[textLabel setIndex_:self.numberOfMessage];
-
-	[self.tempDict setObject:[NSString stringWithFormat:@"%i",self.numberOfMessage] forKey:@"index"];
+	textLabel.index_ = self.numberOfMessage;
+	[tempDict setObject:[NSString stringWithFormat:@"%i",self.numberOfMessage] forKey:@"index"];
 	
 	self.numberOfMessage++;
 	
-	[self.allMessages addObject:[NSDictionary dictionaryWithDictionary:self.tempDict]];
+	[allMessages addObject:[NSDictionary dictionaryWithDictionary:tempDict]];
 	
 	[self addSubview:textLabel];
+    [textLabel release];
 
 	return textLabel;
 }
 
 -(PESMSLabel *)label:(NSString *)text:(UIImage *)image:(TiUIView *)view:(NSString *)pos
 {
-
 	[self performSelectorOnMainThread:@selector(reloadContentSize) withObject:nil waitUntilDone:YES];
 
-	label = [[PESMSLabel alloc] init];
-	[label setFolder:self.folder];
+	PESMSLabel* label = [[PESMSLabel alloc] init];
+	label.folder = self.folder;
+    
     if (self.backgroundLeftCap != nil) {
         label.backgroundLeftCap = self.backgroundLeftCap;
     }
@@ -89,25 +92,25 @@
         label.backgroundTopCap = self.backgroundTopCap;
     }
 	
-	[self.tempDict removeAllObjects];
-	
-	[self addSubview:label];
+	[tempDict removeAllObjects];
 	
 	if(text)
 	{
 		[label addText:text];
-		[self.tempDict setObject:text forKey:pos];
+		[tempDict setObject:text forKey:pos];
 	}
+
 	if(image)
 	{
 		[label addImage:image];
 		TiBlob *blob = [[[TiBlob alloc] initWithImage:image] autorelease];
-		[self.tempDict setObject:blob forKey:pos];
+		[tempDict setObject:blob forKey:pos];
 	}
+
 	if(view)
 	{
 		[label addImageView:view];
-		[self.tempDict setObject:view.proxy forKey:pos];
+		[tempDict setObject:view.proxy forKey:pos];
 	}
 	CGRect frame = label.frame;
 	frame.origin.y += labelsPosition.origin.y == 0 ? 10 : labelsPosition.origin.y;	
@@ -117,13 +120,17 @@
 	a.origin.y = frame.origin.y + frame.size.height + 10; // + 10, margin bottom
 	self.labelsPosition = a;
     
-	[label setIndex_:self.numberOfMessage];
+	label.index_ = self.numberOfMessage;
 
-	[self.tempDict setObject:[NSString stringWithFormat:@"%i",self.numberOfMessage] forKey:@"index"];
+	[tempDict setObject:[NSString stringWithFormat:@"%i",numberOfMessage] forKey:@"index"];
 	
 	self.numberOfMessage++;
 	
-	[self.allMessages addObject:[NSDictionary dictionaryWithDictionary:self.tempDict]];
+	[allMessages addObject:[NSDictionary dictionaryWithDictionary:tempDict]];
+
+	[self addSubview:label];
+    [label release];
+    
 	return label;
 }
 
@@ -168,55 +175,36 @@
 	if(!self.rColor)
 		self.rColor = @"White";
 	[[self label:nil:image:nil:@"recieve"] position:@"Left":self.rColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
 }
 
 -(void)sendImage:(UIImage *)image
 {
-	if(!self.sColor)
-		self.sColor = @"White";
 	[[self label:nil:image:nil:@"send"] position:@"Right":self.sColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
 }
 
 -(void)recieveImageView:(TiUIView *)view
 {
-	if(!self.rColor)
-		self.rColor = @"White";
 	[[self label:nil:nil:view:@"recieve"] position:@"Left":self.rColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
 }
 
 -(void)sendImageView:(TiUIView *)view
 {
-	if(!self.sColor)
-		self.sColor = @"White";
 	[[self label:nil:nil:view:@"send"] position:@"Right":self.sColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
 }
 
 -(void)recieveMessage:(NSString *)text;
 {
-    if(!self.rColor)
-        self.rColor = @"White";
-    
 	[[self label:text:nil:nil:@"recieve"] position:@"Left":self.rColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
 }
 
 -(void)sendMessage:(NSString *)text;
-{	
-    if(!self.sColor)
-        self.sColor = @"White";
-	
-	[[self label:text:nil:nil:@"send"] position:@"Right":self.sColor:self.selectedColor];
-	RELEASE_TO_NIL(label);
+{
+ 	[[self label:text:nil:nil:@"send"] position:@"Right":self.sColor:self.selectedColor];
 }
 
 -(void)addLabel:(NSString *)text;
 {	
 	[self textLabel:text];
-	RELEASE_TO_NIL(textLabel);
 }
 
 -(void)animate:(BOOL)arg
@@ -229,7 +217,7 @@
 	ENSURE_UI_THREAD_0_ARGS
 	[[self subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 	self.labelsPosition = self.frame;
-	[self.allMessages removeAllObjects];
+	[allMessages removeAllObjects];
 	self.numberOfMessage = 0;
 	[self reloadContentSize];
 	[self setNeedsDisplay];
