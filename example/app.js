@@ -50,9 +50,9 @@ var textArea = Ti.SMSView.createView({
 	// textAlignment: 'left',	// <--- Defaulst to left
 	// textColor: 'blue',		// <--- Defaults to "black"
 	returnType: Ti.SMSView.RETURNKEY_DONE, // <---- Defaults to Ti.SMSView.RETURNKEY_DEFAULT
+	keyboardAppearsImmediately: true, // <--- Defaults to false
 	camButton: true				// <--- Defaults to false
 	// hasTab:true				// <--- Defaults to false
-			
 });
 
 win.add(textArea);

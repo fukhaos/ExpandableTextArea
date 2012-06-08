@@ -75,7 +75,13 @@
 {
 	if(!textArea){
 		textArea = [[PESMSTextArea alloc] initWithFrame:self.frame];
-        [textArea becomeTextView];
+        
+        id keyboardAppearsImmediately = [[self proxy] valueForUndefinedKey:@"keyboardAppearsImmediately"];
+        if (keyboardAppearsImmediately) {
+            if ([TiUtils boolValue:keyboardAppearsImmediately]) {
+                [textArea becomeTextView];
+            }
+        }
 		textArea.delegate = self;
 	}
 	return textArea;
