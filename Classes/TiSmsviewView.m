@@ -16,8 +16,6 @@
 
 @implementation TiSmsviewView
 
-@synthesize value;
-
 -(void)dealloc
 {
     RELEASE_TO_NIL(textColor);
@@ -324,8 +322,6 @@
 	NSMutableDictionary *tiEvent = [NSMutableDictionary dictionary];
 	[tiEvent setObject:text forKey:@"value"];
 	[self.proxy fireEvent:@"change" withObject:tiEvent];
-	
-	value = text;
 }
 
 -(void)handleClick:(UITapGestureRecognizer*)recognizer
@@ -420,9 +416,6 @@
         
 		if (textAlignment)
 			[[self textArea] textView].textAlignment = textAlignment;
-        
-		if (value)
-			[[self textArea] textView].text = value;
         
 		if (folder) {
 			[self textArea].folder = folder;
@@ -535,14 +528,6 @@
 	beditable = [TiUtils boolValue:val];
 	if(!firstTime)
 		[[[self textArea] textView] setEditable:beditable];
-}
-
--(void)setValue_:(id)val
-{
-    RELEASE_TO_NIL(value);
-	value = [[TiUtils stringValue:val] retain];
-	if(!firstTime)
-		[[[self textArea] textView]setText:value];
 }
 
 -(void)setAnimated_:(id)args

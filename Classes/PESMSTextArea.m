@@ -159,10 +159,6 @@
 		[camButton		setFrame: CGRectMake(5, 7, 30, 30)];
 	}
 	[[self doneBtn].titleLabel setAdjustsFontSizeToFitWidth:YES];
-	
-	// still a little buggy here
-    //NSLog(@"---------- %@", self.text);
-	//[[self textView] setText:self.text];
 }
 
 -(void)setCamera:(BOOL)val

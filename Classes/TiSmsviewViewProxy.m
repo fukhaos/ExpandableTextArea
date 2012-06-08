@@ -189,11 +189,4 @@
 	return nil;
 }
 
--(id)value
-{
-	if([self viewAttached]) {
-		return [self ourView].value;
-	}
-	return nil;
-}
 @end

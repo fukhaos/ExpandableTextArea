@@ -18,7 +18,6 @@
 	PESMSTextArea *textArea;
 	PESMSScrollView *scrollView;
 	UITapGestureRecognizer* clickGestureRecognizer;
-    NSString *value;
     NSString *folder;
     NSString *buttonTitle;
     UIReturnKeyType returnType;
@@ -43,8 +42,6 @@
     int maxLines, minLines;
     float bottomOfWin;
 }
-
-@property(nonatomic,assign) NSString* value;
 
 -(void)sendImageView:(TiUIView *)view;
 -(void)recieveImageView:(TiUIView *)view;
